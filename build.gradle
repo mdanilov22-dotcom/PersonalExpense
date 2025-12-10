@@ -1,0 +1,57 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    version = '22'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+}
+
+application {
+    mainClass = 'com.example.expensetracker.GuiApp'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.example.expensetracker.MainApp'
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.javadoc {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.author = true
+    options.version = true
+
+    options.links("https://docs.oracle.com/en/java/javase/22/docs/api/")
+}
+
+tasks.register('javadocJar', Jar) {
+    dependsOn tasks.javadoc
+    archiveClassifier.set('javadoc')
+    from("${buildDir}/docs/javadoc")
+}
